@@ -7,4 +7,10 @@ export default defineConfig({
   optimizeDeps: {
     exclude: ['lucide-react'],
   },
+  preview: {
+    host: true,
+    port: process.env.PORT ? parseInt(process.env.PORT) : 5173,
+    strictPort: true,
+    allowedHosts: ['leadreplyai.com', 'www.leadreplyai.com']
+  }
 });
