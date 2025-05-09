@@ -14,11 +14,11 @@ export async function generateEmail(formData: FormData): Promise<any> {
         'X-Title': 'Lead Reply AI'
       },
       body: JSON.stringify({
-        model: 'microsoft/phi-4-reasoning-plus:free',
+        model: 'deepseek/deepseek-prover-v2:free',
         messages: [
           {
             role: 'system',
-            content: 'You are a sales professional writing a follow-up email. Write in a natural, conversational style with two clear paragraphs. The first paragraph should acknowledge the conversation and show understanding of their needs. The second paragraph should focus on specific next steps and solutions. End with a clear call to action on its own line, followed by "Best regards," and a blank line for the signature. Keep it concise and personal. Do not include any placeholders or instructions in the output.'
+            content: 'You are a sales professional writing a follow-up email. Write in a natural, conversational style with two clear paragraphs. The first paragraph should acknowledge the conversation and show understanding of their needs. The second paragraph should focus on specific next steps and solutions. End with a clear, actionable call to action on its own line, followed by "Best regards," and a blank line for the signature. Keep it concise and personal. Do not include any placeholders or instructions in the output.'
           },
           {
             role: 'user',
@@ -37,12 +37,12 @@ export async function generateEmail(formData: FormData): Promise<any> {
 
     const data = await response.json();
     const emailContent = parseEmailResponse(data.choices[0].message.content);
-    
+
     return {
       ...emailContent,
       summary: formData.summary,
       contactName: formData.contactName,
-      companyName: formData.companyName, 
+      companyName: formData.companyName,
       tone: formData.tone
     };
   } catch (error) {
@@ -61,7 +61,7 @@ ${formData.summary}`;
     prompt += `\n\nChat Transcript:\n${formData.transcript}`;
   }
 
-  prompt += '\n\nWrite a natural email with two clear paragraphs. The first paragraph should acknowledge the conversation and show understanding. The second paragraph should focus on specific next steps. End with a clear call to action on its own line. Sign off with "Best regards," followed by a blank line for the signature.';
+  prompt += '\n\nWrite a natural email with two clear paragraphs. The first paragraph should acknowledge the conversation and show understanding. The second paragraph should focus on specific next steps. End with a clear, actionable call to action on its own line. Sign off with "Best regards," followed by a blank line for the signature.';
 
   return prompt;
 }
