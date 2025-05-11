@@ -1,6 +1,7 @@
 # 📄 Lead Reply AI – Smart Follow-Up Email Generator
 
-Transform sales conversations into personalized follow-up emails using artificial intelligence.
+Transform sales conversations into personalized follow-up emails using artificial intelligence. Try it live at [leadreply.com](https://leadreplyai.com)!
+
 
 ---
 
