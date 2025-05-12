@@ -1,32 +1,18 @@
 import { EmailResponse, FormData } from '../types';
 
-const OPENROUTER_API_URL = 'https://openrouter.ai/api/v1/chat/completions';
-
 export async function generateEmail(formData: FormData): Promise<any> {
   try {
-    const prompt = constructPrompt(formData);
-    const response = await fetch(OPENROUTER_API_URL, {
+    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/generate-email`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${import.meta.env.VITE_OPENROUTER_API_KEY}`,
-        'HTTP-Referer': window.location.origin,
-        'X-Title': 'Lead Reply AI'
       },
       body: JSON.stringify({
-        model: 'deepseek/deepseek-prover-v2:free',
-        messages: [
-          {
-            role: 'system',
-            content: 'You are a sales professional writing a follow-up email. Start your response with a compelling, relevant, and concise subject line (prefixed with "Subject:"). The subject should be personalized and attention-grabbing, based on the conversation summary and company context. Then, write the email in a natural, conversational style with two clear paragraphs. The first paragraph should acknowledge the conversation and show understanding of their needs. The second paragraph should focus on specific next steps and solutions, and end with a clear, actionable call to action suggesting a follow-up meeting on Monday or Tuesday between 1pm or 2pm. Sign off with "Best regards," and a blank line for the signature. Keep it concise and personal. Do not include any placeholders or instructions in the output.'
-          },
-          {
-            role: 'user',
-            content: prompt
-          }
-        ],
-        temperature: 0.7,
-        max_tokens: 1000
+        tone: formData.tone,
+        contactName: formData.contactName,
+        companyName: formData.companyName,
+        summary: formData.summary,
+        transcript: formData.transcript
       })
     });
 
@@ -36,7 +22,7 @@ export async function generateEmail(formData: FormData): Promise<any> {
     }
 
     const data = await response.json();
-    const emailContent = parseEmailResponse(data.choices[0].message.content);
+    const emailContent = parseEmailResponse(data.email);
 
     return {
       ...emailContent,
@@ -49,21 +35,6 @@ export async function generateEmail(formData: FormData): Promise<any> {
     console.error('Error generating email:', error);
     throw error;
   }
-}
-
-function constructPrompt(formData: FormData): string {
-  let prompt = `Write a ${formData.tone.toLowerCase()} follow-up email to ${formData.contactName} from ${formData.companyName}.
-
-Conversation Summary:
-${formData.summary}`;
-
-  if (formData.transcript) {
-    prompt += `\n\nChat Transcript:\n${formData.transcript}`;
-  }
-
-  prompt += '\n\nWrite a natural email with two clear paragraphs. The first paragraph should acknowledge the conversation and show understanding. The second paragraph should focus on specific next steps. End with a clear, actionable call to action on its own line. Sign off with "Best regards," followed by a blank line for the signature.';
-
-  return prompt;
 }
 
 function parseEmailResponse(responseText: string): EmailResponse {
