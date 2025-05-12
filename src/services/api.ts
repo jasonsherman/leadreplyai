@@ -1,4 +1,4 @@
-import { EmailResponse, FormData } from '../types';
+import { FormData } from '../types';
 
 export async function generateEmail(formData: FormData): Promise<any> {
   try {
@@ -22,27 +22,9 @@ export async function generateEmail(formData: FormData): Promise<any> {
     }
 
     const data = await response.json();
-    const emailContent = parseEmailResponse(data.email);
-
-    return {
-      ...emailContent,
-      summary: formData.summary,
-      contactName: formData.contactName,
-      companyName: formData.companyName,
-      tone: formData.tone
-    };
+    return data;
   } catch (error) {
     console.error('Error generating email:', error);
     throw error;
   }
-}
-
-function parseEmailResponse(responseText: string): EmailResponse {
-  const subjectMatch = responseText.match(/Subject:\s*(.*?)(?:\n|$)/);
-  const bodyMatch = responseText.match(/(?:Hi|Hello|Dear).*?(?:Best regards,|$)/s);
-
-  const subject = subjectMatch ? subjectMatch[1].trim() : 'Follow-up on our conversation';
-  const body = bodyMatch ? bodyMatch[0].trim() : responseText;
-
-  return { subject, body };
 }
